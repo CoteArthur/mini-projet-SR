@@ -31,32 +31,36 @@ void end_child() {
 
 int init(int *server_fd) {
     struct sockaddr_in server_addr;
+    
+    //gestion processus fils
     struct sigaction ac;
 
     ac.sa_handler = end_child;
     ac.sa_flags = SA_RESTART; 
     sigaction(SIGCHLD, &ac, NULL);
 
+    //création d'une socket d'écoute
     if ((*server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         return -1;
     }
 
-    //préparation des champs sin_family, sin_port et sin_addr.s_addr de cette variable 
+    //préparation des champs sin_family, sin_port et sin_addr.s_addr de server_addr variable 
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr =  htonl(INADDR_ANY);
     server_addr.sin_port = htons(NO_PORT);
 
+    //attachement d'une socket à une adresse
     if (bind(*server_fd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
         perror("bind");
         return -1;
     }
 
+    //ouverture de service
     if (listen(*server_fd, QUEUE_SIZE) == -1) {
         perror("listen");
         return -1;
     }
-    printf("Listening on port %d", NO_PORT);
 
     return 0;
 }
@@ -66,25 +70,32 @@ void service(int *server_fd) {
     struct sockaddr_in client_addr;
 
     while(1) {
+        //acceptation d'une connexion
         if ((client_fd = accept(*server_fd, (struct sockaddr *)&client_addr, &sockaddr_in_size)) == -1) {
             perror("accept");
             continue;
         }
 
-        if (!fork()) {  //processus fils
+        //création d'un processus fils
+        if (!fork()) {
+            //lecture d'une chaine de charactères
             char * in;
             if (read(client_fd, in, sizeof(in)) == -1)
                 perror("read");
 
             printf(in);
 
+            //écriture d'un entier
             int out = 1;
             if (write(client_fd, &out, sizeof(int)) == -1)
                 perror("write");
 
+            //fermeture du socket client
             close(client_fd);
             exit(0);
         }
+
+        //fermeture du socket client
         close(client_fd);
     }
 }
