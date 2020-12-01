@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -18,8 +17,9 @@ int main (int argc, char *argv[]) {
     struct hostent *host_inf;
     struct sockaddr_in server;
 
+    //vérification de la valididé des arguments
     if (argc != 3) {    //TODO better verification
-        printf("Incorrect arguments, usage: ./client [server ip] [port]\n");
+        printf("Incorrect arguments usage: ./client [server ip] [port]\n");
         exit(1);
     }
     host_inf = gethostbyname(argv[1]);
@@ -48,7 +48,7 @@ int main (int argc, char *argv[]) {
     
     bzero(buffer, sizeof(buffer));
     read(soc, buffer, 512);
-    printf("%s", buffer);
+    printf("%s\n", buffer);
 
     //fermeture serveur
     shutdown(soc,2);

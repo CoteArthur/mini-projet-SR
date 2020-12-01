@@ -17,8 +17,9 @@ int main(int argc, char *argv[])
 {
     int server_fd;
 
+    //vérification de la valididé des arguments
     if (argc != 2) {    //TODO check if argv[1] is valid port
-        printf("Incorrect arguments, usage: ./server [port]\n");
+        printf("Incorrect arguments usage: ./server [port]\n");
         exit(1);
     }
     
@@ -89,7 +90,7 @@ void service(int server_fd) {
             if (read(client_fd, buffer, 512) == -1)
                 perror("read");
 
-            printf("%s", buffer);
+            printf("%s\n", buffer);
 
             //écriture d'un entier
             if (write(client_fd, "1", 2) == -1)
