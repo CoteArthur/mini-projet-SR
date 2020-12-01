@@ -32,23 +32,29 @@ int main (int argc, char *argv[]) {
     server.sin_addr = *((struct in_addr *)host_inf->h_addr);
 
     //creation d'un socket
-    if((soc = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+    if ((soc = socket(AF_INET, SOCK_STREAM, 0)) == -1){
         perror("socket");
         exit(1);
     }
 
     //connexion  au serveur
-    if(connect(soc, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1){
+    if (connect(soc, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1){
         perror("connect");
         exit(1);
     }
 
     //dialogue serveur
-    write(soc, "bonjour", 9);
-    
-    bzero(buffer, sizeof(buffer));
-    read(soc, buffer, 512);
-    printf("%s\n", buffer);
+    while (1) {
+        printf("Entrez une référence (q pour quitter): ");
+        scanf("%s", buffer);
+        write(soc, buffer, strlen(buffer));
+
+        if (!strcmp(buffer, "q")) break;
+        
+        bzero(buffer, sizeof(buffer));
+        read(soc, buffer, 512);
+        printf("%s", buffer);
+    }
 
     //fermeture serveur
     shutdown(soc,2);
