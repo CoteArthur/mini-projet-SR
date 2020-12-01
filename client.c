@@ -10,7 +10,7 @@
 #include <string.h>
 
 #define HOSTNAME "127.0.0.1"
-#define PORT 5555
+#define PORT 55555
 
 int main (void) {
     char buffer[512];
@@ -37,8 +37,10 @@ int main (void) {
     }
 
     //dialogue serveur
-    write(soc, "bonjour" ,12);
-    read(soc,buffer,512);
+    write(soc, "bonjour", 9);
+    
+    bzero(buffer, sizeof(buffer));
+    read(soc, buffer, 512);
     printf("%s", buffer);
 
     //fermeture serveur

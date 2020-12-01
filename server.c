@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <strings.h>
 
 #define NO_PORT 55555
 #define QUEUE_SIZE 10
@@ -36,7 +37,7 @@ int init(int *server_fd) {
     struct sigaction ac;
 
     ac.sa_handler = end_child;
-    ac.sa_flags = SA_RESTART; 
+    ac.sa_flags = SA_RESTART;
     sigaction(SIGCHLD, &ac, NULL);
 
     //création d'une socket d'écoute
@@ -68,26 +69,26 @@ int init(int *server_fd) {
 void service(int server_fd) {
     int client_fd, sockaddr_in_size = sizeof(struct sockaddr_in);
     struct sockaddr_in client_addr;
+    char buffer[512];
 
     while(1) {
         //acceptation d'une connexion
         if ((client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &sockaddr_in_size)) < 0) {
             perror("accept");
-            continue;
+            //continue;
         }
 
         //création d'un processus fils
         if (!fork()) {
             //lecture d'une chaine de charactères
-            char buffer[512];
+            bzero(buffer, sizeof(buffer));
             if (read(client_fd, buffer, 512) == -1)
                 perror("read");
 
             printf("%s", buffer);
 
             //écriture d'un entier
-            int out = 1;
-            if (write(client_fd, &out, sizeof(int)) == -1)
+            if (write(client_fd, "1", 2) == -1)
                 perror("write");
 
             //fermeture du socket client
