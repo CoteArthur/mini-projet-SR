@@ -1,38 +1,49 @@
-#include <sys/types.h>          
-#include <sys/socket.h>
 #include <stdio.h>
-#include <netinet/in.h> 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define ip "127.0.0.1"
-#define port 2000
+#define HOSTNAME "127.0.0.1"
+#define PORT 5555
 
-//declaration et creation de socket de type 
-
-
-void main(void)
-{
+int main (void) {
+    char buffer[512];
+    int soc = socket(AF_INET, SOCK_STREAM, 0);
     
-char *hostname;
+    struct hostent *host_inf = gethostbyname(HOSTNAME);
+    struct sockaddr_in server;
 
-struct sockaddr_in server ;
-struct hostent *host_inf ;
-hostinf=gethostbyname(hostname);
+    //memcpy(&server.sin_addr.s_addr,host_inf->h_addr, host_inf->h_length);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT);
+    server.sin_addr = *((struct in_addr *)host_inf->h_addr);
 
-SOCK_STREAM soc ; 
-if((soc =socket(AF_INET, SOCK_STREAM, 0)==-1){
-    printf("erreur");
-    exit(0);
-}
- server.sin_addr.s
- server.sin_family=AF_INET;
- server.sin_port=htons(PORT)
+    //creation d'un socket
+    if((soc = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+        perror("socket");
+        exit(1);
+    }
 
+    //connexion  au serveur
+    if(connect(soc, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1){
+        perror("connect");
+        exit(1);
+    }
 
+    //dialogue serveur
+    write(soc, "bonjour" ,12);
+    read(soc,buffer,512);
+    printf("%s", buffer);
 
-server.sin_addr = *(IN_ADDR *) hostinfo->h_addr;
-
- //demande de conection
-
-
-
+    //fermeture serveur
+    shutdown(soc,2);
+    close(soc);
+ 
+    return 0; 
 }

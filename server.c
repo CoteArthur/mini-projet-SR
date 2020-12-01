@@ -11,7 +11,7 @@
 
 void end_child();
 int init(int *);
-void service(int *);
+void service(int);
 
 int main()
 {
@@ -20,7 +20,7 @@ int main()
     if (init(&server_fd) == -1)
         exit(1);
 
-    service(&server_fd);
+    service(server_fd);
 
     return 0;
 }
@@ -65,13 +65,13 @@ int init(int *server_fd) {
     return 0;
 }
 
-void service(int *server_fd) {
+void service(int server_fd) {
     int client_fd, sockaddr_in_size = sizeof(struct sockaddr_in);
     struct sockaddr_in client_addr;
 
     while(1) {
         //acceptation d'une connexion
-        if ((client_fd = accept(*server_fd, (struct sockaddr *)&client_addr, &sockaddr_in_size)) == -1) {
+        if ((client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &sockaddr_in_size)) < 0) {
             perror("accept");
             continue;
         }
@@ -79,11 +79,11 @@ void service(int *server_fd) {
         //création d'un processus fils
         if (!fork()) {
             //lecture d'une chaine de charactères
-            char * in;
-            if (read(client_fd, in, sizeof(in)) == -1)
+            char buffer[512];
+            if (read(client_fd, buffer, 512) == -1)
                 perror("read");
 
-            printf(in);
+            printf("%s", buffer);
 
             //écriture d'un entier
             int out = 1;
