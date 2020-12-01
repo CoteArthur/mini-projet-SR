@@ -6,3 +6,5 @@ compile:
 
 echo:
 	@echo 'Compiled successfully'
+	@echo 'Starting server: ./server [port]'
+	@echo 'Starting client: ./client [server ip] [port]'

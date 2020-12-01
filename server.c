@@ -7,18 +7,22 @@
 #include <unistd.h>
 #include <strings.h>
 
-#define NO_PORT 55555
 #define QUEUE_SIZE 10
 
 void end_child();
-int init(int *);
+int init(int *, int);
 void service(int);
 
-int main()
+int main(int argc, char *argv[])
 {
     int server_fd;
+
+    if (argc != 2) {    //TODO check if argv[1] is valid port
+        printf("Incorrect arguments, usage: ./server [port]\n");
+        exit(1);
+    }
     
-    if (init(&server_fd) == -1)
+    if (init(&server_fd, atoi(argv[1])) == -1)
         exit(1);
 
     service(server_fd);
@@ -30,7 +34,7 @@ void end_child() {
     while (wait(NULL)!=-1);
 }
 
-int init(int *server_fd) {
+int init(int *server_fd, int NO_PORT) {
     struct sockaddr_in server_addr;
     
     //gestion processus fils

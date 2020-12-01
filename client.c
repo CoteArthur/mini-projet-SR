@@ -9,19 +9,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HOSTNAME "127.0.0.1"
 #define PORT 55555
 
-int main (void) {
+int main (int argc, char *argv[]) {
     char buffer[512];
     int soc = socket(AF_INET, SOCK_STREAM, 0);
-    
-    struct hostent *host_inf = gethostbyname(HOSTNAME);
+
+    struct hostent *host_inf;
     struct sockaddr_in server;
+
+    if (argc != 3) {    //TODO better verification
+        printf("Incorrect arguments, usage: ./client [server ip] [port]\n");
+        exit(1);
+    }
+    host_inf = gethostbyname(argv[1]);
+
+    
 
     //memcpy(&server.sin_addr.s_addr,host_inf->h_addr, host_inf->h_length);
     server.sin_family = AF_INET;
-    server.sin_port = htons(PORT);
+    server.sin_port = htons(atoi(argv[2]));
     server.sin_addr = *((struct in_addr *)host_inf->h_addr);
 
     //creation d'un socket
