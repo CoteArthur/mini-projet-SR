@@ -1,18 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <string.h>
+#include "file-reading-utils.h"
 
 #define QUEUE_SIZE 10
 
 void end_child();
 int init(int *, int);
 void service(int);
-char *get_by_ref(int);
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +20,12 @@ int main(int argc, char *argv[])
         exit(1);
 
     service(server_fd);
+    /*
+    //utilisation de get_by_keyword()
+    char *book_list;
+    get_by_keyword(&book_list, "la");
+    printf("%s", book_list);
+    */
 
     return 0;
 }
@@ -75,24 +73,24 @@ int init(int *server_fd, int NO_PORT) {
 void service(int server_fd) {
     int client_fd, sockaddr_in_size = sizeof(struct sockaddr_in);
     struct sockaddr_in client_addr;
-    char buffer[512];
+    char buffer[1024];
 
     while(1) {
         //acceptation d'une connexion
         if ((client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &sockaddr_in_size)) < 0) {
             perror("accept");
-            //continue;
+            continue;
         }
 
         //création d'un processus fils
         if (!fork()) {
             while (1) {
                 //lecture d'une chaine de charactères
-                if (read(client_fd, buffer, 512) == -1) {
+                bzero(buffer, sizeof(buffer));
+                if (read(client_fd, buffer, sizeof(buffer)) == -1) {
                     perror("read");
                     break;
                 }
-                printf("Buffer: %s", buffer);
 
                 if (!strcmp(buffer, "q")) break;
 
@@ -111,22 +109,4 @@ void service(int server_fd) {
         //fermeture du socket client
         close(client_fd);
     }
-}
-
-char *get_by_ref(int ref) {
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0;
-
-    if ((fp = fopen("fichier-exemple.txt", "r")) == NULL)
-        return "Couldn't open file";
-
-    while ((getline(&line, &len, fp)) != -1) {
-        if (atoi(strtok(line, "#")) == ref) {
-            return strtok(NULL, "");
-        }
-    }
-
-    free(line);
-    return "Reference not found\n";
 }

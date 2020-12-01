@@ -46,6 +46,7 @@ int main (int argc, char *argv[]) {
     //dialogue serveur
     while (1) {
         printf("Entrez une référence (q pour quitter): ");
+        bzero(buffer, sizeof(buffer));
         scanf("%s", buffer);
         write(soc, buffer, strlen(buffer));
 

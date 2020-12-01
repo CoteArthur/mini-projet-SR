@@ -1,7 +1,11 @@
 all: compile echo
 
 compile:
-	@gcc -o server server.c
+	@gcc -c file-reading-utils.c
+	@gcc -c server.c
+	@gcc -o server file-reading-utils.o server.o
+	@rm ./server file-reading-utils.o
+	@rm ./server.o
 	@gcc -o client client.c
 
 echo:
