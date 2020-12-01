@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     if (init(&server_fd, atoi(argv[1])) == -1)
         exit(1);
 
-    service(server_fd);
+    //service(server_fd);
     /*
     //utilisation de get_by_keyword()
     char *book_list;

@@ -24,9 +24,6 @@ int main (int argc, char *argv[]) {
     }
     host_inf = gethostbyname(argv[1]);
 
-    
-
-    //memcpy(&server.sin_addr.s_addr,host_inf->h_addr, host_inf->h_length);
     server.sin_family = AF_INET;
     server.sin_port = htons(atoi(argv[2]));
     server.sin_addr = *((struct in_addr *)host_inf->h_addr);

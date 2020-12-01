@@ -13,9 +13,8 @@ char *get_by_ref(int ref) {
     while ((getline(&line, &len, fp)) != -1) {
         //on fait une copie de la ligne car strtok() modifie la chaine de caractères
         line_cpy = strdup(line);
-        if (atoi(strtok(line, "#")) == ref) {
+        if (atoi(strtok(line, "#")) == ref)
             return line_cpy;
-        }
     }
 
     free(line);
